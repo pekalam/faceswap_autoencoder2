@@ -25,23 +25,31 @@ class Autoenc_light(tf.keras.Model):
         encoder_layers = [
                     InputLayer(input_shape=(96, 96, 3)),
                     Conv2D(filters=params['e_filters'][0], kernel_size=3, strides=(1, 1), activation=params['e_activation'], padding='same',
-                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer']),
+                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_encoder(params), bias_regularizer=self._try_get_regularizer_encoder(params)),
                     Conv2D(filters=params['e_filters'][1], kernel_size=3, strides=(1, 1), activation=params['e_activation'], padding='same',
-                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer']),
+                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_encoder(params), bias_regularizer=self._try_get_regularizer_encoder(params)),
                     Conv2D(filters=params['e_filters'][2], kernel_size=3, strides=(1, 1), activation=params['e_activation'], padding='same',
-                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer']),
+                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_encoder(params), bias_regularizer=self._try_get_regularizer_encoder(params)),
                     Conv2D(filters=params['e_filters'][3], kernel_size=3, strides=(1, 1), activation=params['e_activation'], padding='same',
-                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer']),
+                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_encoder(params), bias_regularizer=self._try_get_regularizer_encoder(params)),
                     Conv2D(filters=params['e_filters'][4], kernel_size=3, strides=(1, 1), activation=params['e_activation'], padding='same',
-                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer']),
+                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_encoder(params), bias_regularizer=self._try_get_regularizer_encoder(params)),
                     
                     Conv2D(filters=params['e_filters'][5], kernel_size=3, strides=(2, 2), activation=params['e_activation'],
-                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer']),
+                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_encoder(params), bias_regularizer=self._try_get_regularizer_encoder(params)),
                     Conv2D(filters=params['e_filters'][6], kernel_size=3, strides=(2, 2), activation=params['e_activation'],
-                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer']),
+                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_encoder(params), bias_regularizer=self._try_get_regularizer_encoder(params)),
 
                     Conv2D(filters=params['e_filters'][7], kernel_size=5, strides=(2, 2), activation=params['e_activation'],
-                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer']),
+                    kernel_initializer=params['e_initializer'], bias_initializer=params['e_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_encoder(params), bias_regularizer=self._try_get_regularizer_encoder(params)),
 
                     Reshape((10*10*params['e_filters'][7],)),
                     Dense(10*10*params['e_filters'][7], activation='linear'),
@@ -49,7 +57,8 @@ class Autoenc_light(tf.keras.Model):
                     Reshape((6,6,params['e_filters'][7],)),
 
                     Conv2D(filters=params['e_filters'][8], kernel_size=3, strides=(1, 1), activation=params['e_h_activation'], padding='same',
-                    kernel_initializer=params['e_h_initializer'], bias_initializer=params['e_h_initializer']),
+                    kernel_initializer=params['e_h_initializer'], bias_initializer=params['e_h_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_encoder(params), bias_regularizer=self._try_get_regularizer_encoder(params)),
                 ]
         if params['batch_norm'] == True:
             i = 2
@@ -70,15 +79,19 @@ class Autoenc_light(tf.keras.Model):
         self.decoder1 = tf.keras.Sequential(
             [
                 InputLayer(input_shape=(dec_shape[0],dec_shape[1],dec_shape[2])),
-  
-                Conv2DTranspose(params['d_filters'][0], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
-                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer']),
-                Conv2DTranspose(params['d_filters'][1], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
-                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer']),
-                Conv2DTranspose(params['d_filters'][2], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
-                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer']),
 
-                Conv2DTranspose(3, kernel_size=5, strides=(2,2), activation='sigmoid', padding='same')
+                Conv2DTranspose(params['d_filters'][0], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
+                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
+                Conv2DTranspose(params['d_filters'][1], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
+                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
+                Conv2DTranspose(params['d_filters'][2], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
+                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
+
+                Conv2DTranspose(3, kernel_size=5, strides=(2,2), activation='sigmoid', padding='same',
+                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
             ]
         )
         self.decoder2 = tf.keras.Sequential(
@@ -86,15 +99,27 @@ class Autoenc_light(tf.keras.Model):
                 InputLayer(input_shape=(dec_shape[0],dec_shape[1],dec_shape[2])),
   
                 Conv2DTranspose(params['d_filters'][0], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
-                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer']),
+                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
                 Conv2DTranspose(params['d_filters'][1], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
-                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer']),
+                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
                 Conv2DTranspose(params['d_filters'][2], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
-                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer']),
+                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
 
-                Conv2DTranspose(3, kernel_size=5, strides=(2,2), activation='sigmoid', padding='same')
+                Conv2DTranspose(3, kernel_size=5, strides=(2,2), activation='sigmoid', padding='same',
+                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
             ]
         )
+
+    def _try_get_regularizer_encoder(self, params: dict):
+        if params.get('e_regularizer') == True:
+            return tf.keras.regularizers.L2(0.0005)
+
+    def _try_get_regularizer_decoder(self, params: dict):
+        if params.get('d_regularizer') == True:
+            return tf.keras.regularizers.L2(0.0005)
 
     def set_center_mean(self, mean_values):
         self.center_mean.assign_add(mean_values)
