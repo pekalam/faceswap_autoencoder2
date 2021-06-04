@@ -39,7 +39,7 @@ class EarlyStopping:
                 should_stop = True
                 print('Stopped due to increase of early stop loss')
 
-        if self.inc_iter > 1 and metric_val <= self.inc_start_loss:
+        if self.inc_iter >= 1 and metric_val <= self.inc_start_loss:
             self.inc_iter = 0
             self.inc_start_loss = 0
             print('saving checkpoint due to decrease of early stop loss')
