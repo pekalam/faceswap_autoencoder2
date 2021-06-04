@@ -1,4 +1,5 @@
 from os.path import join
+from hydra import experimental
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 from itertools import islice
@@ -17,10 +18,10 @@ from data.loaded_dataset import LoadedDataset
 
 def get_preprocessing_layers(ds_mean):
     return tf.keras.Sequential(
-            [
-                layers.experimental.preprocessing.Rescaling(1.0/255.0),
-                layers.experimental.preprocessing.Normalization(mean=ds_mean, variance=1.0),
-            ]
+        [
+            layers.experimental.preprocessing.Rescaling(1.0/255.0),
+            layers.experimental.preprocessing.Normalization(mean=ds_mean, variance=1.0),
+        ]
     )
 
 

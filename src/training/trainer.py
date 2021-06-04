@@ -29,6 +29,13 @@ def tee_q_sz(iterable, n=2, q_sz=None):
             yield newval
     return tuple(gen(d) for d in deques)
 
+class FlipLayer(tf.keras.layers.Layer):
+    def __init__(self, seed, **kwargs):
+        super(FlipLayer, self).__init__(**kwargs)
+        self.rnd = tf.random.Generator.from_seed(seed)
+    def call(self, inputs, **kwargs):
+        flip = self.rnd.uniform([1], 0., 1.)
+        return tf.cond(tf.less(flip, 0.5), lambda: tf.image.flip_left_right(inputs), lambda: inputs)
 
 class FaceSwapTrainer(TrainerBase):
     def __init__(self, cfg: dict, data_loader = None, logger = None, saver = None, load_latest_checkpoint = False, preview_logdir: str = None, model=None, data_loader_output=None):
@@ -63,6 +70,12 @@ class FaceSwapTrainer(TrainerBase):
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=lr) if self.cfg['training'].get('optimizer', None) is None else instantiate(self.cfg['training']['optimizer'], learning_rate=lr)
         self.train_loss = tf.keras.losses.MeanAbsoluteError()
         self.preview_creator = PreviewCreator(self.cfg['training']['img_preview_threshold'], self.ds.x_p1prev, self.ds.x_p2prev, preview_logdir)
+        if cfg['training']['random_flip']:
+            self.flip_layer_x = tf.keras.models.Sequential([FlipLayer(seed=self.seed,trainable=False)])
+            self.flip_layer_y = tf.keras.models.Sequential([FlipLayer(seed=self.seed,trainable=False)])
+        else:
+            self.flip_layer_x = tf.keras.models.Sequential([])
+            self.flip_layer_y = tf.keras.models.Sequential([])
 
 
     def _build_model_and_show_summary(self):
@@ -125,11 +138,15 @@ class FaceSwapTrainer(TrainerBase):
 
         while iterations < self.total_iter:
             x,y = next(self.p1_iter)
+            x = self.flip_layer_x(x)
+            y = self.flip_layer_y(y)
             loss_train, grads_p1 = self._train_step_p1(x, y)
             total_loss_train += loss_train
             num_batches = num_batches + 1
 
             x,y = next(self.p2_iter)
+            x = self.flip_layer_x(x)
+            y = self.flip_layer_y(y)
             loss_train, grads_p2 = self._train_step_p2(x, y)
             total_loss_train += loss_train
             num_batches = num_batches + 1
