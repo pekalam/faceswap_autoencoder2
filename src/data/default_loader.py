@@ -57,14 +57,16 @@ class FaceDsLoader(DataLoaderBase):
                 label_mode=None, class_names=None, color_mode='rgb', image_size=(96,96), 
                 batch_size=cfg['training']['val_batch_size'], shuffle=False,
                 interpolation='bilinear', validation_split=cfg['training']['val_split'],
-                subset=None if cfg['training']['val_split'] == 0 else "validation"
+                subset=None if cfg['training']['val_split'] == 0 else "validation",
+                seed=self.p1_seed
             )
         p2_val_ds = tf.keras.preprocessing.image_dataset_from_directory(
                 p2_train_dir, 
                 label_mode=None, class_names=None, color_mode='rgb', image_size=(96,96), 
                 batch_size=cfg['training']['val_batch_size'], shuffle=False,
                 interpolation='bilinear', validation_split=cfg['training']['val_split'], 
-                subset=None if cfg['training']['val_split'] == 0 else "validation"
+                subset=None if cfg['training']['val_split'] == 0 else "validation",
+                seed=self.p2_seed
             )
         return p1_val_ds, p2_val_ds
 
@@ -109,13 +111,13 @@ class FaceDsLoader(DataLoaderBase):
             p1_val_ds = tf.keras.preprocessing.image_dataset_from_directory(
                 p1_val_dir,
                 label_mode=None, class_names=None, color_mode='rgb', image_size=(96,96), 
-                batch_size=cfg['training']['val_batch_size'], shuffle=False,
+                batch_size=cfg['training']['val_batch_size'], shuffle=False, seed=self.p1_seed,
                 interpolation='bilinear'
             )
             p2_val_ds = tf.keras.preprocessing.image_dataset_from_directory(
                 p2_val_dir, label_mode=None,
                 class_names=None, color_mode='rgb', image_size=(96,96), 
-                batch_size=cfg['training']['val_batch_size'], shuffle=False,
+                batch_size=cfg['training']['val_batch_size'], shuffle=False, seed=self.p2_seed,
                 interpolation='bilinear'
             )
         else:
@@ -130,13 +132,13 @@ class FaceDsLoader(DataLoaderBase):
             p1_test_ds = tf.keras.preprocessing.image_dataset_from_directory(
                     p1_test_dir, 
                     label_mode=None, class_names=None, color_mode='rgb', image_size=(96,96), 
-                    batch_size=cfg['training']['test_batch_size'], shuffle=False, seed=None,
+                    batch_size=cfg['training']['test_batch_size'], shuffle=False, seed=self.p1_seed,
                     interpolation='bilinear'
             )
             p2_test_ds = tf.keras.preprocessing.image_dataset_from_directory(
                     p2_test_dir, 
                     label_mode=None, class_names=None, color_mode='rgb', image_size=(96,96), 
-                    batch_size=cfg['training']['test_batch_size'], shuffle=False, seed=None,
+                    batch_size=cfg['training']['test_batch_size'], shuffle=False, seed=self.p2_seed,
                     interpolation='bilinear'
             )
         else:
@@ -165,22 +167,21 @@ class FaceDsLoader(DataLoaderBase):
             raise ValueError("Training dataset does not contain at most 3 items")
         if len(full_ds_p2) < total_prev:
             raise ValueError("Training dataset does not contain at most 3 items")
-
-        prev_p1.append(np.expand_dims(full_ds_p1[0], axis=0))
         
-        prev_ds_p1 = p1_val_ds if p1_val_ds is not None else p1_test_ds
-        prev_ds_p2 = p2_val_ds if p2_val_ds is not None else p2_test_ds
+        ds_to_prev_p1 = p1_val_ds if p1_val_ds is not None else p1_test_ds
+        ds_to_prev_p2 = p2_val_ds if p2_val_ds is not None else p2_test_ds
 
-        prev_p1.append(np.expand_dims(full_ds_p1[0], axis=0))
-        for x in prev_ds_p1:
+        rand_tr = tf.random.uniform([1], 0, len(full_ds_p1), tf.int32).numpy()[0]
+        prev_p1.append(np.expand_dims(full_ds_p1[rand_tr], axis=0))
+        for x in ds_to_prev_p1:
             for i in range(x.shape[0]):
                 prev_p1.append(np.expand_dims(x[i], axis=0))
                 if len(prev_p1) == total_prev:
                     break
             if len(prev_p1) == total_prev:
                 break
-        prev_p2.append(np.expand_dims(full_ds_p2[0], axis=0))
-        for x in prev_ds_p2:
+        prev_p2.append(np.expand_dims(full_ds_p2[rand_tr], axis=0))
+        for x in ds_to_prev_p2:
             for i in range(x.shape[0]):
                 prev_p2.append(np.expand_dims(x[i], axis=0))
                 if len(prev_p2) == total_prev:
