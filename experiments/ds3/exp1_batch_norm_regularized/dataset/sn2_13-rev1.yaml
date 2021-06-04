@@ -1,0 +1,7 @@
+# @package _group_
+
+#configuration for local development serena - novak dataset
+
+ds_path_p1: "../__dataset2_13-rev1/serena/"
+ds_path_p2: "../__dataset2_13-rev1/novak/"
+has_validation: true
