@@ -10,6 +10,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 from hydra.utils import instantiate
 from training.trainer_base import TrainerBase
+import time
 
 def tee_q_sz(iterable, n=2, q_sz=None):
     it = iter(iterable)
@@ -171,13 +172,14 @@ class FaceSwapTrainer(TrainerBase):
         if self.logger is not None:
             self.logger.begin_train_step()
 
+        start = time.time()
+
         self.p1_iter = iter(self.ds.x_p1)
         self.p2_iter = iter(self.ds.x_p2)
 
         print('starting train step')
         train_loss, grads_p1, grads_p2 = self._train_epoch()
         print('step finished')
-        tf.print(train_loss)
 
         early_stop_metric = train_loss
 
@@ -196,6 +198,7 @@ class FaceSwapTrainer(TrainerBase):
             "grads_p1": None if not self.cfg['training']['show_gradients'] else p1,
             "grads_p2": None if not self.cfg['training']['show_gradients'] else p2,
         }
+        print(result['loss'])
 
 
         del self.p1_iter
@@ -205,13 +208,13 @@ class FaceSwapTrainer(TrainerBase):
             print('starting val step')
             p1_val_loss, p2_val_loss, total_val_loss = self._val_step()
             print('val step finished')
-            tf.print(total_val_loss)
             result = {
                 **result,
                 "p1_val_loss": p1_val_loss.numpy(),
                 "p2_val_loss": p2_val_loss.numpy(),
                 "val_loss": total_val_loss.numpy()
             }
+            print(result['val_loss'])
             early_stop_metric = total_val_loss
 
         if self.step == 0:
@@ -219,6 +222,8 @@ class FaceSwapTrainer(TrainerBase):
             result['seed'] = self.seed
 
         self.step.assign_add(1)
+        print('epoch ', self.step.numpy(), ' finished')
+        print('epochs per h: ', (60*60)/(time.time()-start))
         
         if self.logger is not None:
             self.logger.log_metrics(result, self.step)
