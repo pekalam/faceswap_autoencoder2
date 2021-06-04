@@ -6,7 +6,7 @@ import pytest
 @pytest.mark.parametrize("val_split,val_batch_size,test_batch_size,batch_size", [(0,0,1,1),(0.2,1,1,10),(0.2,None,None,1)])
 def test_loads_valid_images(val_split,val_batch_size,test_batch_size,batch_size):
 
-    for ds_path_p1, ds_path_p2, has_validation in [("__dataset/serena/", "__dataset/novak/", False), ("__dataset2_13/serena/", "__dataset2_13/novak/", True), ("__dataset2_13-rev1/serena/", "__dataset2_13-rev1/novak/", True)]:
+    for ds_path_p1, ds_path_p2, has_validation in [("__dataset/serena/", "__dataset/novak/", False), ("__dataset2_13/serena/", "__dataset2_13/novak/", True), ("__dataset2_13-rev1/serena/", "__dataset2_13-rev1/novak/", True),("__dataset3/serena/", "__dataset3/novak/", True), ("__dataset3_masked/serena/", "__dataset3_masked/novak/", True)]:
         if has_validation and val_split > 0:
             continue
         loader = FaceDsLoader(ds_path_p1, ds_path_p2, None if not has_validation else {'has_validation': True})
