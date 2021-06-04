@@ -1,0 +1,7 @@
+FROM faceswap_autoencoder_base
+
+ENTRYPOINT [ "entrypoint.sh" ]
+
+WORKDIR /app
+COPY src src
+COPY e2e e2e

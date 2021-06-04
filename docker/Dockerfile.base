@@ -1,0 +1,11 @@
+FROM marekbf3/tf_base_gpu:2.4.1
+
+COPY docker/Miniconda3-py39_4.9.2-Linux-x86_64.sh .
+RUN bash Miniconda3-py39_4.9.2-Linux-x86_64.sh -b
+ENV PATH=${PATH}:/root/miniconda3/bin
+COPY ml1.yaml /src/ml1.yaml
+RUN conda env create -f /src/ml1.yaml
+RUN apt-get -y install rsync
+
+COPY docker/entrypoint.sh /bin/entrypoint.sh
+RUN chmod +x /bin/entrypoint.sh

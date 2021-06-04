@@ -1,0 +1,10 @@
+# @package _group_
+name: autoenc_light
+input_shape: "(1,96,96,3)"
+
+e_activation: 'relu'
+e_h_activation: 'tanh'
+e_filters: "[32,32,32,32,32,32,32,32,32]"
+
+d_activation: 'relu'
+d_filters: "[64,64,64]"

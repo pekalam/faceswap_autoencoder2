@@ -5,6 +5,7 @@ __*
 .pytest_cache/
 outputs/
 jupyter-outputs/
+experiments/master/dev
 
 !__dataset
 !__dataset2_13

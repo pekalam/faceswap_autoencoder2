@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+    training2_e2e:
+        hostname: training2_e2e
+        container_name: training2_e2e
+        build:
+            context: ../../
+            dockerfile: e2e/prod_config/Dockerfile.e2e
+        command: python src/main.py training.max_iterations=2 training.checkpoint_frequency=1
+        volumes: 
+            - "./outputs:/app/outputs"
+            - "../../__dataset:/app/__dataset"

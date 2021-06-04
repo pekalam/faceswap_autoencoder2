@@ -7,12 +7,18 @@ val_split: 0
 val_batch_size: 0
 test_batch_size: 1
 take_batch: 5
-seed: null
+seed: 12344321
 
 learning_rate: 0.00001
-early_stop_patience: 4
+early_stop_patience: 10
+early_stop_metric: loss
+early_stop_min_delta_patience: null
+early_stop_min_delta: null
 img_preview_threshold: 1
 max_time_s: null
 no_shuffle: false
 target_loss: 0.000000000000001
 show_gradients: false
+
+#optimizer: 
+#  _target_: tensorflow.keras.optimizers.RMSprop

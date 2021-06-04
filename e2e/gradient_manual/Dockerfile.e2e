@@ -1,0 +1,13 @@
+FROM faceswap_autoencoder_base
+
+RUN apt-get install -y git
+WORKDIR /app
+COPY __dataset __dataset
+COPY __dataset2_13 __dataset2_13
+COPY __dataset2_13-rev1 __dataset2_13-rev1
+COPY src src
+COPY experiments experiments
+COPY docker/entrypoint_gradient.sh /bin/entrypoint_gradient.sh
+RUN chmod +x /bin/entrypoint_gradient.sh
+ENTRYPOINT [ "/bin/entrypoint_gradient.sh" ]
+

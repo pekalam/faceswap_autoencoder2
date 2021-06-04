@@ -1,0 +1,18 @@
+FROM faceswap_autoencoder_base
+
+RUN apt-get install -y git
+COPY __dataset /app/__dataset
+COPY docker/entrypoint_gradient.sh /bin/entrypoint_gradient.sh
+RUN chmod +x /bin/entrypoint_gradient.sh
+ENTRYPOINT [ "/bin/entrypoint_gradient.sh" ]
+
+
+WORKDIR /app
+COPY clear_local_runs.sh clear_local_runs.sh
+COPY docker/fetch_branch_code.sh fetch_branch_code.sh
+COPY docker/gradient_managment.ipynb gradient_managment.ipynb
+
+#RUN python -m ipykernel install --user --name=ml1
+
+
+#ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "ml1", "/bin/entrypoint.sh"]

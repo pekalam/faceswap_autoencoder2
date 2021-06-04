@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-sudo rm -rf ./*/mlruns
-sudo rm -rf ./*/ray_results
+rm -rf ./outputs
+rm -rf ./jupyter-outputs
+rm -rf ./mlruns
+rm -rf ./ray_results

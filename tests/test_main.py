@@ -12,7 +12,6 @@ def test_load_from_absolute_path():
     assert absolute_config.test1 == 1
     assert absolute_config.test2 == 2
 
-
 def test_makes_train_pass_without_error():
     cfg = read_default_config()
     cfg.training.max_iterations = 1

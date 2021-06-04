@@ -1,0 +1,17 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "create branch experiment template",
+            "type": "shell",
+            "command": "bash ./create_branch_exp_templ.sh"
+        },
+        {
+            "label": "clear local runs",
+            "type": "shell",
+            "command": "bash ./clear_local_runs.sh"
+        }
+    ]
+}

@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+    manual_gradient_e2e:
+        container_name: manual_gradient_e2e
+        build:
+            context: ../../
+            dockerfile: e2e/gradient_manual/Dockerfile.e2e
+        volumes: 
+            - "./jupyter-outputs:/app/jupyter-outputs"
+        ports: 
+            - "8888:8888"

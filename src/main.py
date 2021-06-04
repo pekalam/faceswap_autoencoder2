@@ -29,7 +29,7 @@ def _load_cfg_from_argv():
     absolute_config = None
     if len(absoulute_config_arg) > 0:
         absoulute_config_arg = absoulute_config_arg[0]
-        sys.argv.pop(absoulute_config_arg[0])
+        sys.argv.pop(sys.argv.index(absoulute_config_arg[0]))
         with initialize_config_dir(config_dir=absoulute_config_arg[1]):
             absolute_config = compose(config_name="config")
             model = absolute_config.model.name

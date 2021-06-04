@@ -1,6 +1,11 @@
 
 defaults:
-  - runner: default
-  - model: default
+  - runner: ray
+  - model: autoenc_deconv
   - training: default
-  - dataset: default 
+  - dataset: sn
+  - runner/trainable@runner.trainable: default
+
+preview_dataset: false
+prev_ds_path_p1: null
+prev_ds_path_p2: null

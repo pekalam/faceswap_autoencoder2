@@ -1,9 +1,18 @@
 {
     // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    // Hover to view descriptions of existing attributes. "args": ["--tunetrain", "--experiment_name=test"]
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387//
+    //"args": ["preview_dataset=true"] "args": ["--config-path=../experiments/master/template"] "args": ["--config-path=../experiments/master/template", "hydra.run.dir=.", "hydra.output_subdir=null"],
+    //"args": ["--absoulute-config-path=D:\\WIN10_SSDSamsung\\TEMP\\jupyter-outputs\\gradient_arch_batch_dataset2\\.hydra", "--config-name=config"],
     "version": "0.2.0",
     "configurations": [
+        {
+            "name": "Python: Module",
+            "type": "python",
+            "request": "launch",
+            "module": "${relativeFileDirname}.${fileBasenameNoExtension}",
+            "console": "integratedTerminal"
+        },
         {
             "name": "Python: Current File",
             "type": "python",

@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+    training1_e2e:
+        hostname: training1_e2e
+        container_name: training1_e2e
+        build:
+            context: ../../
+            dockerfile: e2e/training_logs/Dockerfile.e2e
+        command: python src/main.py training.max_iterations=2 training.checkpoint_frequency=1 +runner.tune.training.maxiterations._target_=ray.tune.grid_search "+runner.tune.training.maxiterations.values=[1,2]"
+        volumes: 
+            - "./outputs:/app/outputs"
+            - "../../__dataset:/app/__dataset"
