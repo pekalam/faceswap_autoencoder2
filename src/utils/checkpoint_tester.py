@@ -8,7 +8,7 @@ from model.impl_factory import model_impl_factory
 
 def check_is_checkpoint_loading(artifacts_dir: str, checkpoint_dir):
     params = read_experiment_params(artifacts_dir)
-    model = model_impl_factory(params['model'])
+    model = model_impl_factory(params)
     #TODO change shape
     model.build((1,96,96,3))
     ckpt = tf.train.Checkpoint(model=model)

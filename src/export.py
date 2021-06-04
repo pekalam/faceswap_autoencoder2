@@ -9,7 +9,7 @@ from tensorflow.python.framework.convert_to_constants import convert_variables_t
 def main(artifacts_dir_path, export_dir, checkpoint_dir):
     params = read_experiment_params(artifacts_dir_path)
     print("loading model " + params['model']['name'])
-    model = get_autoenc_impl_from_config(params['model'], ds_mean=[0,0,0])
+    model = get_autoenc_impl_from_config(params, ds_mean=[0,0,0])
     model.build((1,96,96,3))
     ckpt = tf.train.Checkpoint(model=model)
     ckpt.read(os.path.join(artifacts_dir_path, checkpoint_dir, "model")).assert_consumed()

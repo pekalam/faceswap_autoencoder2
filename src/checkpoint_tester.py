@@ -10,7 +10,7 @@ from model.impl_factory import model_impl_factory as get_autoenc_impl_from_confi
 
 def check_is_checkpoint_loading(artifacts_dir: str, checkpoint_dir):
     params = read_experiment_params(artifacts_dir)
-    model = get_autoenc_impl_from_config(params['model'], ds_mean=[0,0,0])
+    model = get_autoenc_impl_from_config(params, ds_mean=[0,0,0])
     model.build((1,96,96,3))
     ckpt = tf.train.Checkpoint(model=model)
     ckpt.read(os.path.join(artifacts_dir, checkpoint_dir, "model")).assert_consumed()

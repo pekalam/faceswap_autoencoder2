@@ -1,10 +1,6 @@
 
-import sys
 from model.impl_factory import model_impl_factory as get_autoenc_impl_from_config
-
 from training.preview_creator import PreviewCreator
-sys.path.append("..")
-
 from .early_stopping import EarlyStopping
 import tensorflow as tf
 import os
@@ -47,6 +43,7 @@ class FaceSwapTrainer(TrainerBase):
         self.data_loader = data_loader
         self.ds = data_loader(cfg) if data_loader is not None else data_loader_output
         self.model = get_autoenc_impl_from_config(cfg, ds_mean=data_loader.ds_mean) if model is None else model
+        self._build_model_and_show_summary()
         #assuming lenghts are equal
         self.total_iter=len(self.ds.x_p1)
 

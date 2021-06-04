@@ -7,6 +7,8 @@ services:
         build:
             context: ../../
             dockerfile: e2e/prod_config/Dockerfile.e2e
+        environment: 
+            PYTHONPATH: /app/src
         command: python src/main.py training.max_iterations=2 training.checkpoint_frequency=1
         volumes: 
             - "./outputs:/app/outputs"

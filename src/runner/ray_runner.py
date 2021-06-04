@@ -1,12 +1,8 @@
 import ray
-from ray.tune.trial import Trial
 from data.default_loader import FaceDsLoader
 from training.trainer import FaceSwapTrainer
-from model.impl_factory import model_impl_factory as get_autoenc_impl_from_config
-import sys
 
 from ray.tune.resources import Resources
-sys.path.append("..")
 
 from ray.tune.logger import TBXLoggerCallback
 import os
@@ -130,17 +126,29 @@ def start_tune_training(cfg: DictConfig):
     tune_args = {}
     tune_args['callbacks'] = [
             CustomTBXLoggerCallback(),
+            
+    ]
+
+    if cfg.runner.include_mlflow == True:
+        tune_args['callbacks'].append(
             CustomMLflowLoggerCallback(
                 tracking_uri=cfg.runner.mlflow.tracking_uri,
                 experiment_name=cfg.runner.mlflow.experiment_name,
                 save_artifact=cfg.runner.mlflow.save_artifact
             )
-    ]
+        )
 
     tune_args = {**tune_args, **cfg.runner.run}
 
     if tune_args.get('search_alg') is not None:
         tune_args['search_alg'] = instantiate(tune_args['search_alg'])
+
+    if cfg.runner.single_seed == True:
+        if cfg.training.seed is None:
+            cfg.training.seed = int(time.time())
+            print('Generated single tune seed: ', cfg.training.seed)
+        else:
+            print('Using existing single tune seed: ', cfg.training.seed)
 
     modelhp = {}
     trainhp = {}

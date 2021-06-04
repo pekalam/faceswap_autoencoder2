@@ -9,7 +9,7 @@ from tensorflow.python.framework.convert_to_constants import convert_variables_t
 def export(artifacts_dir_path, export_dir, checkpoint_dir):
     params = read_experiment_params(artifacts_dir_path)
     print("loading model " + params['model']['name'])
-    model = model_impl_factory(params['model'])
+    model = model_impl_factory(params)
     #TODO change shape
     input_shape = (1,96,96,3)
     model.build(input_shape)

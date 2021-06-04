@@ -11,5 +11,6 @@
         "/K",
         "conda activate <env-name>"
     ],
-    "jupyter.jupyterServerType": "local"
+    "jupyter.jupyterServerType": "local",
+    "files.eol": "\n"
 }

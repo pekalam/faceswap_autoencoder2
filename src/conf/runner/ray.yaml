@@ -1,10 +1,12 @@
 # @package _group_
 
 name: ray
+include_mlflow: false
+single_seed: true
 run:
   metric: loss
   mode: min
-  verbose: 2
+  verbose: 3
   name: example
   local_dir: "./ray_results"
   checkpoint_at_end: true
@@ -18,7 +20,7 @@ run:
   #  mode: min
 
 init_config:
-  local_mode: true
+  local_mode: false
   include_dashboard: false
 
 
