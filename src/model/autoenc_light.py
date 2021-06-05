@@ -124,11 +124,11 @@ class Autoenc_light(tf.keras.Model):
 
     def _try_get_regularizer_encoder(self, params: dict):
         if params.get('e_regularizer') == True:
-            return tf.keras.regularizers.L2(0.0005)
+            return tf.keras.regularizers.L2(params.get('e_regularizer_l2'))
 
     def _try_get_regularizer_decoder(self, params: dict):
         if params.get('d_regularizer') == True:
-            return tf.keras.regularizers.L2(0.0005)
+            return tf.keras.regularizers.L2(params.get('d_regularizer_l2'))
 
     def set_center_mean(self, mean_values):
         self.center_mean.assign_add(mean_values)

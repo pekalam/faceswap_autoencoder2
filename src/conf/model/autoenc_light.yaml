@@ -8,6 +8,7 @@ e_filters: "[64,64,64,64,64,64,64,64,64]"
 e_initializer: 'he_normal'
 e_h_initializer: 'glorot_uniform'
 e_regularizer: false
+e_regularizer_l2: 0.0005
 
 d_activation: 'relu'
 d_filters: "[64, 128, 256]"
@@ -16,3 +17,4 @@ d_initializer: 'he_normal'
 d_regularizer: false
 d_channelwise: false
 d_channelwise_act: 'relu'
+d_regularizer_l2: 0.0005
