@@ -4,7 +4,8 @@ from training.trainer import FaceSwapTrainer
 from .utils import read_default_config
 
 def test_training_makes_one_pass_without_error():
-    for ds_path_p1, ds_path_p2, has_validation in [("__dataset/serena/", "__dataset/novak/", False), ("__dataset2_13/serena/", "__dataset2_13/novak/", True), ("__dataset2_13-rev1/serena/", "__dataset2_13-rev1/novak/", True)]:
+    for ds_path_p1, ds_path_p2, has_validation in [("__dataset/serena/", "__dataset/novak/", False), ("__dataset2_13/serena/", "__dataset2_13/novak/", True), ("__dataset2_13-rev1/serena/", "__dataset2_13-rev1/novak/", True), 
+    ("__dataset3/serena/", "__dataset3/novak/", True), ("__dataset3_masked_large/serena/", "__dataset3_masked_large/novak/", True)]:
         cfg = read_default_config()
         data_loader = FaceDsLoader(ds_path_p1, ds_path_p2, None if not has_validation else {'has_validation': True})
         model = Autoenc_deconv()
