@@ -1,0 +1,20 @@
+# @package _group_
+name: autoenc_light
+input_shape: "(1,96,96,3)"
+
+e_activation: 'relu'
+e_h_activation: 'tanh'
+e_filters: "[64,64,64,64,64,64,64,64,64]"
+e_initializer: 'he_normal'
+e_h_initializer: 'glorot_uniform'
+e_regularizer: true
+e_regularizer_l2: 0.0005
+
+d_activation: 'relu'
+d_filters: "[64, 128, 256]"
+batch_norm: true
+d_initializer: 'he_normal'
+d_regularizer: true
+d_channelwise: false
+d_channelwise_act: 'relu'
+d_regularizer_l2: 0.0005

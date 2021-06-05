@@ -1,0 +1,11 @@
+
+defaults:
+  - runner: ray
+  - model: autoenc_light
+  - training: default
+  - dataset: sn3_masked_large
+  - runner/trainable@runner.trainable: colab
+
+preview_dataset: false
+prev_ds_path_p1: __dataset3/novak
+prev_ds_path_p2: __dataset3/serena
