@@ -20,7 +20,7 @@ fi
 
 git clone -b "$branch" "https://$token@github.com/pekalam/faceswap_autoencoder.git"
 
-to_cpy=( "src" "experiments" "__dataset" "__dataset2_13" "__dataset2_13-rev1" "__dataset3" "__dataset3_masked" )
+to_cpy=( "src" "experiments" "__dataset" "__dataset2_13" "__dataset2_13-rev1" "__dataset3" "__dataset3_masked" "__dataset3_masked_large" )
 
 for f in "${to_cpy[@]}"; do
     path="/app/$f"

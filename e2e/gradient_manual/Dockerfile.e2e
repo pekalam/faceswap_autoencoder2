@@ -7,6 +7,7 @@ COPY __dataset2_13 __dataset2_13
 COPY __dataset2_13-rev1 __dataset2_13-rev1
 COPY __dataset3 __dataset3
 COPY __dataset3_masked __dataset3_masked
+COPY __dataset3_masked_large __dataset3_masked_large
 COPY src src
 COPY experiments experiments
 COPY docker/entrypoint_gradient.sh /bin/entrypoint_gradient.sh
