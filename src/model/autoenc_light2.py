@@ -5,9 +5,37 @@ from data.default_loader import get_preprocessing_layers
 import copy
 from .param_utils import get_array_from_params_split
 from hydra.experimental import compose, initialize, initialize_config_dir
-from .autoenc_light2 import ChannelWiseDense
 
-class Autoenc_light(tf.keras.Model):
+
+class ChannelWiseDense(tf.keras.layers.Layer):
+    def __init__(self, input_shape, activation, **kwargs):
+        super().__init__(trainable=True, name="channelwise", **kwargs)
+        self.input_shape_ = input_shape
+        self.layers = []
+        for i in range(input_shape[-1]):
+            self.layers.append(Dense(input_shape[0] * input_shape[1], activation=activation))
+
+
+    def build(self, input_shape):
+        for l in self.layers:
+            l.build((input_shape[0], input_shape[1] * input_shape[2]))
+        super().build(input_shape)
+
+    def call(self, inputs, **kwargs):
+        out = None
+        # reshape to (batch, x * y, f)
+        x = tf.reshape(inputs, tf.constant([-1, inputs.shape[1] * inputs.shape[2], inputs.shape[3]], dtype=tf.int32))
+        for i in range(len(self.layers)):
+            # reshape to (batch, x, y, 1)
+            d_out = tf.reshape(self.layers[i](x[:,:,i]), tf.constant([-1, inputs.shape[1], inputs.shape[2]], dtype=tf.int32))
+            d_out = tf.expand_dims(d_out, -1)
+            if out is not None:
+                out = tf.concat([d_out, out],axis=-1)
+            else:
+                out = d_out
+        return out
+
+class Autoenc_light2(tf.keras.Model):
     def __init__(self, ds_mean = None, params: dict = {}):
         super().__init__()
         if ds_mean is None:
@@ -77,49 +105,47 @@ class Autoenc_light(tf.keras.Model):
         self.center_mean = tf.Variable([[ds_mean]], dtype=tf.float32)
 
         dec_shape = (self.encoder.output.shape[1], self.encoder.output.shape[2], self.encoder.output.shape[3])
-
-        decoder1_layers = [
-                InputLayer(input_shape=(dec_shape[0],dec_shape[1],dec_shape[2])),
-
-                Conv2DTranspose(params['d_filters'][0], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
-                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
-                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
-                Conv2DTranspose(params['d_filters'][1], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
-                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
-                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
-                Conv2DTranspose(params['d_filters'][2], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
-                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
-                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
-
-                Conv2DTranspose(3, kernel_size=5, strides=(2,2), activation='sigmoid', padding='same',
-                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
-        ]
-        if params['d_channelwise'] == True:
-            decoder1_layers.insert(1, ChannelWiseDense((dec_shape[0],dec_shape[1],dec_shape[2]), params['d_channelwise_act']))
         self.decoder1 = tf.keras.Sequential(
-            decoder1_layers
-        )
-
-        decoder2_layers = [
+            [
                 InputLayer(input_shape=(dec_shape[0],dec_shape[1],dec_shape[2])),
-
-                Conv2DTranspose(params['d_filters'][0], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
+                Conv2DTranspose(params['d_filters'][0], kernel_size=3, strides=(1,1), activation=params['d_activation'], padding='same',
                     kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
                     kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
+
                 Conv2DTranspose(params['d_filters'][1], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
                     kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
                     kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
                 Conv2DTranspose(params['d_filters'][2], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
                     kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
                     kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
+                Conv2DTranspose(params['d_filters'][3], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
+                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
 
                 Conv2DTranspose(3, kernel_size=5, strides=(2,2), activation='sigmoid', padding='same',
                     kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
-        ]
-        if params['d_channelwise'] == True:
-            decoder2_layers.insert(1, ChannelWiseDense((dec_shape[0],dec_shape[1],dec_shape[2]), params['d_channelwise_act']))
+            ]
+        )
         self.decoder2 = tf.keras.Sequential(
-            decoder2_layers
+            [
+                InputLayer(input_shape=(dec_shape[0],dec_shape[1],dec_shape[2])),
+                Conv2DTranspose(params['d_filters'][0], kernel_size=3, strides=(1,1), activation=params['d_activation'], padding='same',
+                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
+
+                Conv2DTranspose(params['d_filters'][1], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
+                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
+                Conv2DTranspose(params['d_filters'][2], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
+                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
+                Conv2DTranspose(params['d_filters'][3], kernel_size=3, strides=(2,2), activation=params['d_activation'], padding='same',
+                    kernel_initializer=params['d_initializer'], bias_initializer=params['d_initializer'],
+                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
+
+                Conv2DTranspose(3, kernel_size=5, strides=(2,2), activation='sigmoid', padding='same',
+                    kernel_regularizer=self._try_get_regularizer_decoder(params), bias_regularizer=self._try_get_regularizer_decoder(params)),
+            ]
         )
 
     def _try_get_regularizer_encoder(self, params: dict):
@@ -152,10 +178,9 @@ class Autoenc_light(tf.keras.Model):
 
 if __name__ == '__main__':
     with initialize(config_path='../conf'):
-        cfg = compose(config_name="config", overrides=['model=autoenc_light'])
-    model = Autoenc_light(params=cfg['model'])
-    model.build((4,96,96,3))
+        cfg = compose(config_name="config", overrides=['model=autoenc_light2'])
+    model = Autoenc_light2(params=cfg['model'])
+    model.build((1,96,96,3))
     model.encoder.summary()
     model.decoder1.summary()
     model.decoder2.summary()
-    print(model(tf.zeros((4,96,96,3))))
