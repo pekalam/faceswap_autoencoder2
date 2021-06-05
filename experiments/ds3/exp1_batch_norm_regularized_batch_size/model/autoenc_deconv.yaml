@@ -1,0 +1,3 @@
+# @package _group_
+name: autoenc_deconv
+input_shape: "(1,96,96,3)"
