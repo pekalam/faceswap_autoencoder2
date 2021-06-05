@@ -1,0 +1,44 @@
+# @package _group_
+
+name: ray
+include_mlflow: false
+single_seed: true
+run:
+  metric: loss
+  mode: min
+  verbose: 3
+  name: ds3_exp1_regularized_vs_non
+  local_dir: "./ray_results"
+  checkpoint_at_end: true
+  keep_checkpoints_num: 3
+  checkpoint_score_attr: min-loss
+  log_to_file: true
+  reuse_actors: false
+  #search_alg:
+  #  _target_: ray.tune.suggest.bayesopt.BayesOptSearch
+  #  metric: loss
+  #  mode: min
+
+init_config:
+  local_mode: false
+  include_dashboard: false
+
+
+mlflow:
+  experiment_name: ds3_exp1_regularized_vs_non
+  tracking_uri: mlruns
+  save_artifact: true
+
+
+tune:
+#  training:
+#    max_iterations:
+#      _target_: ray.tune.grid_search
+#      values: [1, 2]
+  model:
+    e_regularizer:
+      _target_: ray.tune.grid_search
+      values: [true, false]
+    d_regularizer:
+      _target_: ray.tune.grid_search
+      values: [true, false]
