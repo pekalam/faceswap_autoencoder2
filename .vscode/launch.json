@@ -3,7 +3,7 @@
     // Hover to view descriptions of existing attributes. "args": ["--tunetrain", "--experiment_name=test"]
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387//
     //"args": ["preview_dataset=true"] "args": ["--config-path=../experiments/master/template"] "args": ["--config-path=../experiments/master/template", "hydra.run.dir=.", "hydra.output_subdir=null"],
-    //"args": ["--absoulute-config-path=D:\\WIN10_SSDSamsung\\TEMP\\jupyter-outputs\\gradient_arch_batch_dataset2\\.hydra", "--config-name=config"],
+    //"args": ["--absoulute-config-path=D:\\WIN10_SSDSamsung\\TEMP\\jupyter-outputs\\gradient_arch_batch_dataset2\\.hydra", "--config-name=config"],exp1_batch_norm_regularized_vs_non
     "version": "0.2.0",
     "configurations": [
         {
