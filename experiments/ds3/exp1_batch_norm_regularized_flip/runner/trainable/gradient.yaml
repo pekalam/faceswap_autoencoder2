@@ -1,0 +1,4 @@
+# @package _group_
+
+cpus: 5
+gpus: 1
