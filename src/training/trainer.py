@@ -68,7 +68,7 @@ class FaceSwapTrainer(TrainerBase):
         self.checkpoint_iter = 0
         self.early_stopping = EarlyStopping(early_stop_patience, early_stop_min_delta, early_stop_min_delta_patience)
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=lr) if self.cfg['training'].get('optimizer', None) is None else instantiate(self.cfg['training']['optimizer'], learning_rate=lr)
-        self.train_loss = tf.keras.losses.MeanAbsoluteError()
+        self.train_loss = tf.keras.losses.MeanAbsoluteError() if self.cfg['training']['loss'] == 'mae' else tf.keras.losses.MeanSquaredError()
         self.preview_creator = PreviewCreator(self.cfg['training']['img_preview_threshold'], self.ds.x_p1prev, self.ds.x_p2prev, preview_logdir)
         if cfg['training']['random_flip']:
             self.flip_layer_x = tf.keras.models.Sequential([FlipLayer(seed=self.seed,trainable=False)])
